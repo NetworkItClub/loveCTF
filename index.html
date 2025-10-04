@@ -98,7 +98,7 @@
 <body>
 
   <div class="img-wrapper">
-    <img id="loveImage" src="image.png" alt="Love Image">
+    <img id="loveImage" src="images.jpeg" alt="Love Image">
     <span class="emoji" style="left:20%; animation-delay:0s;">❤️</span>
     <span class="emoji" style="left:50%; animation-delay:1s;">💖</span>
     <span class="emoji" style="left:80%; animation-delay:2s;">💕</span>
@@ -118,14 +118,16 @@
   <script>
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
-    const flagBox = document.getElementById('flagBox');
     const imgEl = document.getElementById('loveImage');
     const emojis = document.querySelectorAll('.emoji');
+    const flagBox = document.getElementById('flagBox');
 
-    const originalImage = 'image.png'; 
-    const sadImage = 'images.jpeg'; // Gambar sedih valid
+    const originalImage = 'images.jpeg';
+    const sadImage = 'https://i.ibb.co/rp5bn8y/sad-face.png'; // ganti kalau mau gambar sedih sendiri
 
-    // Random posisi tombol Yes
+    let justMoved = false; // penanda anti-tap HP
+
+    // Posisi acak tombol Yes
     function setRandomPosition(btn) {
       const x = Math.floor(Math.random() * (window.innerWidth - btn.offsetWidth - 20));
       const y = Math.floor(Math.random() * (window.innerHeight - btn.offsetHeight - 20));
@@ -133,21 +135,26 @@
       btn.style.top = y + 'px';
     }
 
-    setRandomPosition(yesBtn);
-
-    // Hover Yes → kabur
+    // Hover (desktop) → tombol kabur
     yesBtn.addEventListener('mouseenter', () => {
       setRandomPosition(yesBtn);
     });
 
-      // Kabur juga kalau disentuh (Mobile)
+    // Touch (mobile) → tombol kabur & blok klik
     yesBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault(); // cegah klik langsung
+      e.preventDefault();
       setRandomPosition(yesBtn);
+      justMoved = true;
+      setTimeout(() => justMoved = false, 300);
     });
 
-    // Klik Yes → reset gambar & emoji love + ambil flag
-    yesBtn.addEventListener('click', async () => {
+    // Klik YES → ambil flag, reset love mode
+    yesBtn.addEventListener('click', async (e) => {
+      if (justMoved) {
+        e.preventDefault();
+        return;
+      }
+
       imgEl.style.opacity = 0;
       setTimeout(() => {
         imgEl.src = originalImage;
@@ -161,13 +168,13 @@
         const flag = await res.text();
         flagBox.textContent = flag.trim();
         flagBox.style.display = 'block';
-      } catch (err) {
+      } catch {
         flagBox.textContent = 'Gagal ambil flag 😅';
         flagBox.style.display = 'block';
       }
     });
 
-    // Klik No → ganti ke sad mode 😢
+    // Klik NO → ganti ke sad mode
     noBtn.addEventListener('click', () => {
       imgEl.style.opacity = 0;
       setTimeout(() => {
@@ -191,8 +198,11 @@
       return sads[Math.floor(Math.random() * sads.length)];
     }
 
-    // Resize → reposition tombol yes
+    // Resize → reposition
     window.addEventListener('resize', () => setRandomPosition(yesBtn));
+
+    // Posisi awal tombol YES acak
+    setRandomPosition(yesBtn);
   </script>
 
 </body>
