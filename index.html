@@ -140,6 +140,12 @@
       setRandomPosition(yesBtn);
     });
 
+      // Kabur juga kalau disentuh (Mobile)
+    yesBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault(); // cegah klik langsung
+      setRandomPosition(yesBtn);
+    });
+
     // Klik Yes → reset gambar & emoji love + ambil flag
     yesBtn.addEventListener('click', async () => {
       imgEl.style.opacity = 0;
