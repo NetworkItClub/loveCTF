@@ -34,9 +34,10 @@
       width: 200px;
       border-radius: 20px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      transition: opacity 0.4s ease;
     }
 
-    .heart {
+    .emoji {
       position: absolute;
       font-size: 24px;
       animation: floatUp 4s ease-in infinite;
@@ -97,12 +98,12 @@
 <body>
 
   <div class="img-wrapper">
-    <img src="image.png" alt="Love Image">
-    <span class="heart" style="left:20%; animation-delay:0s;">❤️</span>
-    <span class="heart" style="left:50%; animation-delay:1s;">💖</span>
-    <span class="heart" style="left:80%; animation-delay:2s;">💕</span>
-    <span class="heart" style="left:30%; animation-delay:1.5s;">💓</span>
-    <span class="heart" style="left:70%; animation-delay:0.5s;">💘</span>
+    <img id="loveImage" src="image.png" alt="Love Image">
+    <span class="emoji" style="left:20%; animation-delay:0s;">❤️</span>
+    <span class="emoji" style="left:50%; animation-delay:1s;">💖</span>
+    <span class="emoji" style="left:80%; animation-delay:2s;">💕</span>
+    <span class="emoji" style="left:30%; animation-delay:1.5s;">💓</span>
+    <span class="emoji" style="left:70%; animation-delay:0.5s;">💘</span>
   </div>
 
   <h1>Do you love me? 💖</h1>
@@ -118,8 +119,13 @@
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
     const flagBox = document.getElementById('flagBox');
+    const imgEl = document.getElementById('loveImage');
+    const emojis = document.querySelectorAll('.emoji');
 
-    // Posisi awal random
+    const originalImage = 'image.png'; 
+    const sadImage = 'images.jpeg'; // Gambar sedih valid
+
+    // Random posisi tombol Yes
     function setRandomPosition(btn) {
       const x = Math.floor(Math.random() * (window.innerWidth - btn.offsetWidth - 20));
       const y = Math.floor(Math.random() * (window.innerHeight - btn.offsetHeight - 20));
@@ -129,13 +135,21 @@
 
     setRandomPosition(yesBtn);
 
-    // Hover → tombol Yes kabur posisi baru
+    // Hover Yes → kabur
     yesBtn.addEventListener('mouseenter', () => {
       setRandomPosition(yesBtn);
     });
 
-    // Klik Yes → ambil flag.txt
+    // Klik Yes → reset gambar & emoji love + ambil flag
     yesBtn.addEventListener('click', async () => {
+      imgEl.style.opacity = 0;
+      setTimeout(() => {
+        imgEl.src = originalImage;
+        imgEl.style.opacity = 1;
+      }, 300);
+
+      emojis.forEach(e => e.innerText = randomLoveEmoji());
+
       try {
         const res = await fetch('flag.txt');
         const flag = await res.text();
@@ -147,13 +161,31 @@
       }
     });
 
-    // Klik No → teks “yahh ckp tw 😢”
+    // Klik No → ganti ke sad mode 😢
     noBtn.addEventListener('click', () => {
+      imgEl.style.opacity = 0;
+      setTimeout(() => {
+        imgEl.src = sadImage;
+        imgEl.style.opacity = 1;
+      }, 300);
+
+      emojis.forEach(e => e.innerText = randomSadEmoji());
       flagBox.textContent = 'yahh ckp tw 😢';
       flagBox.style.display = 'block';
     });
 
-    // Resize window → reposition
+    // Fungsi random emoji
+    function randomLoveEmoji() {
+      const loves = ['❤️','💖','💕','💓','💘','💞','💝'];
+      return loves[Math.floor(Math.random() * loves.length)];
+    }
+
+    function randomSadEmoji() {
+      const sads = ['🥲','😢','😭','☹️','🥹'];
+      return sads[Math.floor(Math.random() * sads.length)];
+    }
+
+    // Resize → reposition tombol yes
     window.addEventListener('resize', () => setRandomPosition(yesBtn));
   </script>
 
